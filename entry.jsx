@@ -2,6 +2,32 @@ require("./style.css");
 var React = require('react');
 var ReactDOM = require('react-dom');
 var classNames = require('classnames');
+var Dispatcher = require('flux').Dispatcher;
+var EventEmitter = require('events').EventEmitter;
+var assign = require('object-assign');
+var phraseDispatcher = new Dispatcher();
+
+var CHANGE_EVENT = 'change';
+
+// Initialize the phraseStore
+var phraseStore = assign({}, EventEmitter.prototype, {
+  phrase: null,
+
+  emitChange: function() {
+    this.emit(CHANGE_EVENT);
+  },
+
+  addChangeListener: function(callback) {
+    this.on(CHANGE_EVENT, callback);
+  },
+
+  dispatcherIndex: phraseDispatcher.register(function(payload) {
+    if (payload.actionType == 'phrase-select') {
+      phraseStore.phrase = payload.selectedPhrase
+      phraseStore.emitChange();
+    }
+  })
+});
 
 // Each phrase can only have one subphrase that is replaceable
 // TODO: Modify it so that it can handle an array
@@ -89,6 +115,14 @@ var phrases = [
           {
             learn: "une maison",
             know: "a house"
+          },
+          {
+            learn: "un grand château",
+            know: "a big castle"
+          },
+          {
+            learn: "une vieille maison",
+            know: "an old house"
           }
         ]
       }
@@ -104,6 +138,18 @@ var phrases = [
           {
             learn: "un arbre",
             know: "a tree"
+          },
+          {
+            learn: "un billet",
+            know: "a ticket"
+          },
+          {
+            learn: "une copine",
+            know: "a girlfriend"
+          },
+          {
+            learn: "un couteau",
+            know: "a knife"
           }
         ]
       }
@@ -183,7 +229,6 @@ var PhraseVariation = React.createClass({
 
   createVariation: function() {
     return this.parsePhraseSegments().map(this.renderSubPhrase);
-    // return this.props.base.replace(this.props.replaceSubPhrase, React.createElement('input', {type: 'text'}, "Foobar"));
   },
 
   render: function() {
@@ -208,6 +253,14 @@ var VariationContainer = React.createClass({
 var Phrase = React.createClass({
   getInitialState: function() {
     return {selected: false}
+  },
+
+  onStoreChange: function() {
+    this.setState({selected: phraseStore.phrase == this.props.phrase.base});
+  },
+
+  componentDidMount: function() {
+    phraseStore.addChangeListener(this.onStoreChange);
   },
 
   classes: function() {
@@ -264,8 +317,11 @@ var Phrase = React.createClass({
     );
   },
 
-  // TODO: Implement Flux to ensure that only one Phrase component can be selected at any time
   select: function() {
+    phraseDispatcher.dispatch({
+      actionType: 'phrase-select',
+      selectedPhrase: (this.state.selected ? this.props.phrase.base : null)
+    })
     this.renderVariations();
     this.setState({selected: !this.state.selected});
   },
