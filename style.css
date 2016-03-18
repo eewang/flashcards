@@ -1,0 +1,64 @@
+.container, .variation-container {
+  text-align: center;
+  font-size: 24px;
+}
+
+.phrase {
+  font-size: 1em;
+  margin-left: 1em;
+  margin-bottom: 1em;
+  margin-top: 1em;
+  border: 1px solid;
+  padding: 1em;
+  width: 75%;
+}
+
+.phrase.first, .phrase-variation.first {
+  margin-top: 0;
+}
+
+.word {
+  vertical-align: top;
+  margin-right: 6px;
+}
+
+.replaceable {
+  background-color: yellow;
+  padding: 0 6px;
+  border: 1px solid;
+}
+
+.selected {
+  margin-left: 3em;
+}
+
+#variations, #phrases {
+  width: 50%;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.phrase-variation {
+  border: 1px solid blue;
+  padding: 1em;
+  margin: 1em 0;
+}
+
+.prompt {
+  display: inline-block;
+}
+
+.user-input {
+  margin-top: 0.5em;
+  text-align: center;
+}
+
+.prompt-know {
+  display: block;
+  font-style: italic;
+  font-size: 0.6em;
+}
+
+.correct {
+  background-color: green;
+}
